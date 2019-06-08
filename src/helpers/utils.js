@@ -1,25 +1,26 @@
-import { STATUS } from './constants';
+import { MESSAGE, STATUS } from './constants';
 
 export class Response {
   static send(
     response,
     code = STATUS.OK,
     data = [],
-    message = '',
-    status = true
+    message = MESSAGE.SUCCESS_MESSAGE,
+    status = true,
   ) {
     return response.status(code).json({
       code,
       data,
       message,
-      status
+      status,
+      timestamp: new Date().getTime(),
     });
   }
 }
 
 export const validatorFormater = ({ param, msg }) => ({
   field: param,
-  message: msg
+  message: msg,
 });
 
 export default {};

@@ -22,7 +22,8 @@ export const MESSAGE = {
   VALIDATE_ERROR:
     'There was a problem with your request, please check the values you entered.',
 
-  SUCCESS_MESSAGE: 'Operation was successful'
+  SUCCESS_MESSAGE: 'Operation was successful',
+  FAILURE_MESSAGE: 'Operation failed',
 };
 
 export default {};
