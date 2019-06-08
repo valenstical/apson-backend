@@ -4,9 +4,13 @@
   "description": "Backend server for APSON",
   "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon --exec babel-node src/server.js",
+    "start": "nodemon --exec babel-node src/server.js",
     "build": "babel src --out-dir dist",
-    "serve": "node dist/server.js"
+    "serve": "node dist/server.js",
+    "migrate": "sequelize db:migrate",
+    "migrate:undo": "sequelize db:migrate:undo",
+    "migrate:refresh": "sequelize db:migrate:undo:all",
+    "migrate:create": "sequelize migration:generate --name"
   },
   "repository": {
     "type": "git",

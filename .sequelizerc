@@ -1,8 +1,11 @@
+require('@babel/register');
 const path = require('path');
+require('dotenv').config();
 
 module.exports = {
-  config: path.resolve('server/bin', 'babel-hook'),
-  'models-path': path.resolve('server', 'models'),
-  'migrations-path': path.resolve('database', 'migrations'),
-  'seeders-path': path.resolve('database', 'seeders'),
+  config: path.resolve('src/database', 'config.js'),
+  'models-path': path.resolve('src/database', 'models'),
+  'migrations-path': path.resolve('src/database', 'migrations'),
+  'seeders-path': path.resolve('src/database', 'seeders'),
 };
+console.log('df);
