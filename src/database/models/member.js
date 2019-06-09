@@ -28,7 +28,10 @@ export default (sequelize, DataTypes) => {
     password: {
       type: DataTypes.STRING,
       set(value) {
-        this.setDataValue('password', bcrypt.hashSync(value, process.env.SECRET_CODE));
+        this.setDataValue(
+          'password',
+          bcrypt.hashSync(value, process.env.SECRET_CODE),
+        );
       },
     },
     image: {
@@ -43,12 +46,13 @@ export default (sequelize, DataTypes) => {
       defaultValue: false,
     },
     createdAt: {
-      allowNull: false,
       type: DataTypes.DATE,
+      defaultValue: sequelize.NOW,
     },
     updatedAt: {
-      allowNull: false,
       type: DataTypes.DATE,
+      defaultValue: sequelize.NOW,
+      onUpdate: sequelize.NOW,
     },
   });
   Member.associate = (models) => {

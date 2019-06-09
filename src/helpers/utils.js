@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import { MESSAGE, STATUS } from './constants';
 
 export class Response {
@@ -22,5 +23,11 @@ export const validatorFormater = ({ param, msg }) => ({
   field: param,
   message: msg,
 });
+
+export const generateToken = (payload, expiresIn = '1h') => jwt.sign(
+  payload,
+  process.env.SECRET_KEY,
+  { expiresIn }
+);
 
 export default {};

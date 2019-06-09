@@ -3,13 +3,43 @@ import { Response } from '../helpers/utils';
 import { STATUS, MESSAGE } from '../helpers/constants';
 
 const validateRequired = (field, message = 'This field is required') => body(field)
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage(message);
+  .trim()
+  .not()
+  .isEmpty()
+  .withMessage(message);
+
+const validateEmail = () => body('email')
+  .trim()
+  .isEmail()
+  .withMessage('Enter a valid email');
+
+const validatePhone = () => body('phone')
+  .trim()
+  .isMobilePhone()
+  .withMessage('Enter a valid mobile phone number');
+
+const validateState = () => body('state')
+  .trim()
+  .isInt()
+  .withMessage('Choose a state')
+  .isInt({ min: 0, max: 36 })
+  .withMessage('Choose a state');
+
+const validateSex = () => body('sex')
+  .trim()
+  .isIn(['Male', 'Female'])
+  .withMessage('Choose a sex');
 
 export const Validator = {
   validateLogin: [validateRequired('username'), validateRequired('password')],
+  validateRegistration: [
+    validateRequired('name'),
+    validateRequired('password'),
+    validateState(),
+    validateEmail(),
+    validateSex(),
+    validatePhone(),
+  ],
 };
 
 export const handleValidation = (request, response, next) => {

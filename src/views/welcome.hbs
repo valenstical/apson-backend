@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+        .top {
+            border-top: 4px solid #00b09b;
+            padding: 50px 30px 10px;
+            max-width: 550px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: white;
+        }
+
+        body {
+            background-color: #efefef;
+            font-family: Nunito;
+            padding: 40px 15px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6em;
+        }
+
+        .btn {
+            color: white;
+            background-color: #00b09b;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 18px;
+            margin-top: 30px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .smaller {
+            margin-top: 0px;
+            margin-bottom: 7px;
+        }
+
+        h2 {
+            color: #00b09b;
+            max-width: 550px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 26px;
+        }
+
+        .wrn {
+            font-size: 12px;
+            font-style: italic;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="inner">
+        <div class="top">
+            <div style="text-align: center; margin-bottom: 60px;">
+                <img src="https://www.apsonigeria.org/assets/images/icons/icon.jpg" width="80" />
+                <h2>Association of Private School Owners of Nigera (APSON)</h2>
+            </div>
+            <h1>Welcome to APSON</h1>
+            <p class="smaller">Hello {{name}},</p>
+            <p class="smaller">Congratulations on taking your first step to becoming a member of the <strong>Association
+                    of Private School Owners of Nigeria (APSON)</strong>.</p>
+            <p style="color: #c90c0c; font-weight: bold;">Please click the button below to verify your email address.
+            </p>
+            <div class="btn-wrapper">
+                <a class="btn" href="{{link}}">Verify your email</a>
+                <div style="text-align: center; margin-top: 50px;">
+                    <a href="https://www.apsonigeria.org"
+                        style="color: #00b09b; font-weight: bold; font-size: 12px; text-decoration: underline;">Association
+                        of Private School Owners of Nigeria (APSON)</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
