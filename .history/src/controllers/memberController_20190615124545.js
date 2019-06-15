@@ -86,41 +86,6 @@ class MemberController {
   }
 
   /**
-   * Update profile image
-   * @param {object} request The request object
-   * @param {object} response The response object
-   * @param {function} next The next callback function
-   */
-  static async updateProfileImage(request, response) {
-    const { memberId } = response.locals;
-    const { url } = request.body;
-    try {
-      await Member.update({ image: url }, { where: { id: memberId } });
-      Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
-    } catch (error) {
-      MemberController.displayInsertError('Update member details failed.', error, response);
-    }
-  }
-
-  /**
-   * Request new password
-   * @param {object} request The request object
-   * @param {object} response The response object
-   * @param {function} next The next callback function
-   */
-  static async forgotPassword(request, response) {
-    const { email } = request.body;
-    const token = generateToken({ email }, '1h');
-    Response.send(
-      response,
-      STATUS.OK,
-      `${process.env.ROOT}/reset-password?token=${token}`,
-      'Update sucessful!',
-      true,
-    );
-  }
-
-  /**
    * Helper method to send insert or update error
    * @static
    * @param {string} title The title of the error message

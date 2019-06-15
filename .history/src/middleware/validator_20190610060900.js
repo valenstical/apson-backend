@@ -16,7 +16,7 @@ const validateEmail = () => body('email')
 
 const validatePhone = () => body('phone')
   .trim()
-  .isMobilePhone(['en-NG'])
+  .isMobilePhone()
   .withMessage('Enter a valid mobile phone number');
 
 const validateState = () => body('state')
@@ -31,11 +31,6 @@ const validateSex = () => body('sex')
   .isIn(['Male', 'Female'])
   .withMessage('Choose a sex');
 
-const validateUrl = (field = 'url', message = 'Enter a valid url') => body(field)
-  .trim()
-  .isURL()
-  .withMessage(message);
-
 const validateMemberDetails = [
   validateRequired('name'),
   validateState(),
@@ -46,11 +41,12 @@ const validateMemberDetails = [
 
 export const Validator = {
   validateLogin: [validateRequired('username'), validateRequired('password')],
-  validateRegistration: [...validateMemberDetails, validateRequired('password')],
+  validateRegistration: [
+    ...validateMemberDetails,
+    validateRequired('password'),
+  ],
   validateMemberDetails,
   validateToken,
-  validateImage: [validateUrl('url', 'Image url invalid')],
-  validateEmail: [validateEmail()],
 };
 
 export const handleValidation = (request, response, next) => {

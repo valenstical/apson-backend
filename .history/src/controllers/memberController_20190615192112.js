@@ -111,13 +111,7 @@ class MemberController {
   static async forgotPassword(request, response) {
     const { email } = request.body;
     const token = generateToken({ email }, '1h');
-    Response.send(
-      response,
-      STATUS.OK,
-      `${process.env.ROOT}/reset-password?token=${token}`,
-      'Update sucessful!',
-      true,
-    );
+    Response.send(response, STATUS.OK, '', 'Update sucessful!', true);
   }
 
   /**

@@ -31,10 +31,10 @@ const validateSex = () => body('sex')
   .isIn(['Male', 'Female'])
   .withMessage('Choose a sex');
 
-const validateUrl = (field = 'url', message = 'Enter a valid url') => body(field)
+const validateUrl = () => body('url')
   .trim()
   .isURL()
-  .withMessage(message);
+  .withMessage('Enter a valid url');
 
 const validateMemberDetails = [
   validateRequired('name'),
@@ -49,8 +49,6 @@ export const Validator = {
   validateRegistration: [...validateMemberDetails, validateRequired('password')],
   validateMemberDetails,
   validateToken,
-  validateImage: [validateUrl('url', 'Image url invalid')],
-  validateEmail: [validateEmail()],
 };
 
 export const handleValidation = (request, response, next) => {

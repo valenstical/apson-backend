@@ -49,8 +49,7 @@ export const Validator = {
   validateRegistration: [...validateMemberDetails, validateRequired('password')],
   validateMemberDetails,
   validateToken,
-  validateImage: [validateUrl('url', 'Image url invalid')],
-  validateEmail: [validateEmail()],
+  validateImage: [validateUrl('image', 'Image url invalid')],
 };
 
 export const handleValidation = (request, response, next) => {

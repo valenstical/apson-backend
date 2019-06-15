@@ -24,6 +24,10 @@ export const validatorFormater = ({ param, msg }) => ({
   message: msg,
 });
 
-export const generateToken = (payload, expiresIn = '365d') => jwt.sign(payload, process.env.SECRET_KEY, { expiresIn });
+export const generateToken = (payload, expiresIn = '1h') => jwt.sign(
+  payload,
+  process.env.SECRET_KEY,
+  { expiresIn }
+);
 
 export default {};

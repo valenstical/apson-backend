@@ -28,7 +28,10 @@ export default (sequelize, DataTypes) => {
     password: {
       type: DataTypes.STRING,
       set(value) {
-        this.setDataValue('password', bcrypt.hashSync(value, process.env.SECRET_KEY));
+        this.setDataValue(
+          'password',
+          bcrypt.hashSync(value, process.env.SECRET_CODE),
+        );
       },
     },
     image: {

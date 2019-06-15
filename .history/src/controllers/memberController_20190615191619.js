@@ -109,15 +109,14 @@ class MemberController {
    * @param {function} next The next callback function
    */
   static async forgotPassword(request, response) {
-    const { email } = request.body;
-    const token = generateToken({ email }, '1h');
-    Response.send(
-      response,
-      STATUS.OK,
-      `${process.env.ROOT}/reset-password?token=${token}`,
-      'Update sucessful!',
-      true,
-    );
+    const { memberId } = response.locals;
+    const { url } = request.body;
+    try {
+      await Member.update({ image: url }, { where: { id: memberId } });
+      Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
+    } catch (error) {
+      MemberController.displayInsertError('Update member details failed.', error, response);
+    }
   }
 
   /**

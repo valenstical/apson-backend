@@ -50,7 +50,6 @@ export const Validator = {
   validateMemberDetails,
   validateToken,
   validateImage: [validateUrl('url', 'Image url invalid')],
-  validateEmail: [validateEmail()],
 };
 
 export const handleValidation = (request, response, next) => {

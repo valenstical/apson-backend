@@ -65,7 +65,21 @@ class MemberController {
       dataValues.token = generateToken({ id: dataValues.id });
       Response.send(response, STATUS.CREATED, dataValues, 'Registration sucessful!', true);
     } catch (error) {
-      MemberController.displayInsertError('Registration failed.', error, response);
+      const { errors } = error;
+      const { path } = errors[0];
+      const message = path === 'email' ? 'Email already exists' : 'Phone number already exists';
+      Response.send(
+        response,
+        STATUS.UNPROCESSED,
+        [
+          {
+            field: path,
+            message,
+          },
+        ],
+        `Registration failed. ${message}.`,
+        false,
+      );
     }
   }
 
@@ -76,74 +90,39 @@ class MemberController {
    * @param {function} next The next callback function
    */
   static async updateMember(request, response) {
+    let result = null;
+    const { body } = request;
     const { memberId } = response.locals;
+    const title = memberId ? 'Update' : 'Registration';
     try {
-      await Member.update(request.body, { where: { id: memberId } });
-      Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
+      body.id = memberId || Random(100000000, 999999999);
+      result = memberId
+        ? await Member.update(body, { where: { id: memberId }, returning: true })
+        : await Member.create(body);
+      // result = await Member.upsert(body, { where: { id: body.id }, returning: true });
+      const { dataValues } = memberId ? result[1] : result[0];
+      console.log(result);
+      delete dataValues.password;
+      dataValues.token = generateToken({ id: dataValues.id });
+      Response.send(response, STATUS.CREATED, dataValues, `${title} sucessful!`, true);
     } catch (error) {
-      MemberController.displayInsertError('Update member details failed.', error, response);
+      console.log(error);
+      const { errors } = error;
+      const { path } = errors[0];
+      const message = path === 'email' ? 'Email already exists' : 'Phone number already exists';
+      Response.send(
+        response,
+        STATUS.UNPROCESSED,
+        [
+          {
+            field: path,
+            message,
+          },
+        ],
+        `${title} failed. ${message}.`,
+        false,
+      );
     }
-  }
-
-  /**
-   * Update profile image
-   * @param {object} request The request object
-   * @param {object} response The response object
-   * @param {function} next The next callback function
-   */
-  static async updateProfileImage(request, response) {
-    const { memberId } = response.locals;
-    const { url } = request.body;
-    try {
-      await Member.update({ image: url }, { where: { id: memberId } });
-      Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
-    } catch (error) {
-      MemberController.displayInsertError('Update member details failed.', error, response);
-    }
-  }
-
-  /**
-   * Request new password
-   * @param {object} request The request object
-   * @param {object} response The response object
-   * @param {function} next The next callback function
-   */
-  static async forgotPassword(request, response) {
-    const { email } = request.body;
-    const token = generateToken({ email }, '1h');
-    Response.send(
-      response,
-      STATUS.OK,
-      `${process.env.ROOT}/reset-password?token=${token}`,
-      'Update sucessful!',
-      true,
-    );
-  }
-
-  /**
-   * Helper method to send insert or update error
-   * @static
-   * @param {string} title The title of the error message
-   * @param {object} error The error object
-   * @param {object} response The response object
-   * @memberof MemberController
-   */
-  static displayInsertError(title, error, response) {
-    const { errors } = error;
-    const { path } = errors[0];
-    const message = path === 'email' ? 'Email already exists' : 'Phone number already exists';
-    Response.send(
-      response,
-      STATUS.UNPROCESSED,
-      [
-        {
-          field: path,
-          message,
-        },
-      ],
-      `${title} ${message}.`,
-      false,
-    );
   }
 
   /**

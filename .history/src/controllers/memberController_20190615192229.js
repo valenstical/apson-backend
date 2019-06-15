@@ -114,7 +114,7 @@ class MemberController {
     Response.send(
       response,
       STATUS.OK,
-      `${process.env.ROOT}/reset-password?token=${token}`,
+      `${process.env.ROOT}/reset-password`,
       'Update sucessful!',
       true,
     );

@@ -1,11 +1,11 @@
 import express from 'express';
-import auth from './auth';
+import membersRoute from './members';
 import { Response } from '../helpers/utils';
 import { STATUS, MESSAGE } from '../helpers/constants';
 
 const router = express.Router();
 
-router.use('/auth', auth);
+router.use('/members', membersRoute);
 
 router.all('*', (request, response) => {
   Response.send(response, STATUS.NOT_FOUND, [], MESSAGE.NOT_FOUND, false);

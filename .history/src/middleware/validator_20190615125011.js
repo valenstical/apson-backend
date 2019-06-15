@@ -2,6 +2,7 @@ import { validationResult, body } from 'express-validator/check';
 import { Response } from '../helpers/utils';
 import { STATUS, MESSAGE } from '../helpers/constants';
 import validateToken from './authenticate';
+import MemberController from '../controllers/memberController';
 
 const validateRequired = (field, message = 'This field is required') => body(field)
   .trim()
@@ -16,7 +17,7 @@ const validateEmail = () => body('email')
 
 const validatePhone = () => body('phone')
   .trim()
-  .isMobilePhone(['en-NG'])
+  .isMobilePhone()
   .withMessage('Enter a valid mobile phone number');
 
 const validateState = () => body('state')
@@ -31,11 +32,6 @@ const validateSex = () => body('sex')
   .isIn(['Male', 'Female'])
   .withMessage('Choose a sex');
 
-const validateUrl = (field = 'url', message = 'Enter a valid url') => body(field)
-  .trim()
-  .isURL()
-  .withMessage(message);
-
 const validateMemberDetails = [
   validateRequired('name'),
   validateState(),
@@ -49,9 +45,21 @@ export const Validator = {
   validateRegistration: [...validateMemberDetails, validateRequired('password')],
   validateMemberDetails,
   validateToken,
-  validateImage: [validateUrl('url', 'Image url invalid')],
-  validateEmail: [validateEmail()],
 };
+
+const validateUserExists = (column, value) => [
+  body(FIELD.EMAIL)
+    .trim()
+    .custom(async (email) => {
+      const user = await UsersController.getUser('email', email);
+      if (!alternate && user) {
+        return Promise.reject(MESSAGE.EMAIL_EXISTS);
+      }
+      if (alternate && !user) {
+        return Promise.reject(MESSAGE.EMAIL_NOT_EXISTS);
+      }
+    }),
+];
 
 export const handleValidation = (request, response, next) => {
   const errors = validationResult(request).formatWith(({ param, msg }) => ({
