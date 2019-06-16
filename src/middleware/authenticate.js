@@ -13,9 +13,8 @@ const validateToken = (request, response, next) => {
   const token = authorization.split(' ')[1];
   jwt.verify(token, process.env.SECRET_KEY, (error, value) => {
     if (error) return displayError(response);
-    const { id } = value;
-    if (error || !id) return displayError(response);
-    response.locals.memberId = id;
+    if (error || !value) return displayError(response);
+    response.locals.authValue = value;
     next();
   });
 };

@@ -9,6 +9,11 @@ const validateRequired = (field, message = 'This field is required') => body(fie
   .isEmpty()
   .withMessage(message);
 
+const validateEmpty = (field, message = 'This field is required') => body(field)
+  .not()
+  .isEmpty()
+  .withMessage(message);
+
 const validateEmail = () => body('email')
   .trim()
   .isEmail()
@@ -44,13 +49,32 @@ const validateMemberDetails = [
   validatePhone(),
 ];
 
+const validateComparison = (field1, field2, message = 'Passwords do not match.') => [
+  body(field1)
+    .not()
+    .isEmpty()
+    .withMessage('This field is required'),
+  body(field2)
+    .not()
+    .isEmpty()
+    .withMessage('This field is required')
+    .custom((password, { req }) => {
+      if (password !== req.body[field1]) {
+        throw new Error(message);
+      } else {
+        return password;
+      }
+    }),
+];
+
 export const Validator = {
-  validateLogin: [validateRequired('username'), validateRequired('password')],
-  validateRegistration: [...validateMemberDetails, validateRequired('password')],
+  validateLogin: [validateRequired('username'), validateEmpty('password')],
+  validateRegistration: [...validateMemberDetails, validateEmpty('password')],
   validateMemberDetails,
   validateToken,
   validateImage: [validateUrl('url', 'Image url invalid')],
   validateEmail: [validateEmail()],
+  validateResetPassword: [...validateComparison('password', 'confirm_password')],
 };
 
 export const handleValidation = (request, response, next) => {

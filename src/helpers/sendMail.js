@@ -1,10 +1,11 @@
-
 import mailer from 'nodemailer';
-import smptTransport from 'nodemailer-smtp-transport';
-import handleBar from 'nodemailer-express-handlebars';
+import Handlebars from 'handlebars';
+import { readFile } from './utils';
 
 class Mailer {
-  static send(to, subject, message) {
+  static async send({
+    to, subject, template, context
+  }) {
     const smtp = {
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -18,20 +19,16 @@ class Mailer {
       replyTo: process.env.EMAIL_ADDRESS,
       to,
       subject,
-      html: message,
     };
-    const transport = mailer.createTransport(smptTransport(smtp));
-    transport.use('compile', handleBar({
-      viewEngine: {
-        extName: '.hbs',
-        layoutsDir: 'views',
-      },
-      viewPath: 'views',
-      extName: '.hbs'
-    }));
-
-    transport.sendMail(content, (err, info) => {
-    });
+    try {
+      const file = await readFile(`views/${template}.html`);
+      const transport = mailer.createTransport(smtp);
+      const compiled = Handlebars.compile(file);
+      content.html = compiled(context);
+      transport.sendMail(content, (err, info) => {});
+    } catch (error) {
+      // TODO
+    }
   }
 }
 

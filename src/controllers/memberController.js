@@ -4,6 +4,7 @@ import Random from 'random-int';
 import { Response, generateToken } from '../helpers/utils';
 import { STATUS } from '../helpers/constants';
 import models from '../database/models';
+import Mailer from '../helpers/sendMail';
 
 const {
   Member,
@@ -76,9 +77,11 @@ class MemberController {
    * @param {function} next The next callback function
    */
   static async updateMember(request, response) {
-    const { memberId } = response.locals;
+    const {
+      authValue: { id },
+    } = response.locals;
     try {
-      await Member.update(request.body, { where: { id: memberId } });
+      await Member.update(request.body, { where: { id } });
       Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
     } catch (error) {
       MemberController.displayInsertError('Update member details failed.', error, response);
@@ -92,10 +95,12 @@ class MemberController {
    * @param {function} next The next callback function
    */
   static async updateProfileImage(request, response) {
-    const { memberId } = response.locals;
+    const {
+      authValue: { id },
+    } = response.locals;
     const { url } = request.body;
     try {
-      await Member.update({ image: url }, { where: { id: memberId } });
+      await Member.update({ image: url }, { where: { id } });
       Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
     } catch (error) {
       MemberController.displayInsertError('Update member details failed.', error, response);
@@ -110,14 +115,56 @@ class MemberController {
    */
   static async forgotPassword(request, response) {
     const { email } = request.body;
+    const member = await MemberController.getMember('email', email);
+
     const token = generateToken({ email }, '1h');
+    Mailer.send({
+      to: email,
+      subject: 'Reset your Password',
+      template: member ? 'forgot-password' : 'no-account',
+      context: {
+        icon: process.env.APSON_ICON,
+        name: member ? member.name : '',
+        link: `${process.env.ROOT}/reset-password?token=${token}`,
+        root: process.env.ROOT,
+      },
+    });
     Response.send(
       response,
       STATUS.OK,
-      `${process.env.ROOT}/reset-password?token=${token}`,
-      'Update sucessful!',
+      [],
+      `A link to reset your password has been set to ${email}. Please check your email.`,
       true,
     );
+  }
+
+  /**
+   * Reset password
+   * @param {object} request The request object
+   * @param {object} response The response object
+   * @param {function} next The next callback function
+   */
+  static async resetPassword(request, response) {
+    const {
+      authValue: { email },
+    } = response.locals;
+    const { password } = request.body;
+    try {
+      if (!email) {
+        return Response.send(
+          response,
+          STATUS.UNATHORIZED,
+          [],
+          'There was an issue verifying your account. You may need to send another request for a new password.',
+          true,
+        );
+      }
+
+      await Member.update({ password }, { where: { email } });
+      Response.send(response, STATUS.CREATED, [], 'Password reset sucessful!', true);
+    } catch (error) {
+      MemberController.displayInsertError('Password reset failed!.', error, response);
+    }
   }
 
   /**

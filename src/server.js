@@ -6,6 +6,7 @@ import multer from 'multer';
 
 import router from './routes/index';
 
+process.env.BASE_DIR = __dirname;
 dotenv.config();
 const app = express();
 

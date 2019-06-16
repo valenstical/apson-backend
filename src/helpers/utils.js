@@ -1,4 +1,7 @@
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
+import util from 'util';
+
 import { MESSAGE, STATUS } from './constants';
 
 export class Response {
@@ -25,5 +28,7 @@ export const validatorFormater = ({ param, msg }) => ({
 });
 
 export const generateToken = (payload, expiresIn = '365d') => jwt.sign(payload, process.env.SECRET_KEY, { expiresIn });
+
+export const readFile = file => util.promisify(fs.readFile)(`${process.env.BASE_DIR}/${file}`, 'utf-8');
 
 export default {};

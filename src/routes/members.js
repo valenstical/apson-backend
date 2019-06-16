@@ -29,11 +29,20 @@ router.patch(
 );
 
 // Request new password
-router.patch(
+router.post(
   '/forgot_password',
   Validator.validateEmail,
   handleValidation,
-  MemberController.updateProfileImage,
+  MemberController.forgotPassword,
+);
+
+// Reset password
+router.patch(
+  '/reset_password',
+  Validator.validateToken,
+  Validator.validateResetPassword,
+  handleValidation,
+  MemberController.resetPassword,
 );
 
 export default router;
