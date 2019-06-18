@@ -4,7 +4,7 @@ import { readFile } from './utils';
 
 class Mailer {
   static async send({
-    to, subject, template, context
+    to, subject, template, context, attachments
   }) {
     const smtp = {
       host: process.env.EMAIL_HOST,
@@ -19,6 +19,7 @@ class Mailer {
       replyTo: process.env.EMAIL_ADDRESS,
       to,
       subject,
+      attachments,
     };
     try {
       const file = await readFile(`views/${template}.html`);

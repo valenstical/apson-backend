@@ -4,9 +4,8 @@ export default (sequelize, DataTypes) => {
   const Member = sequelize.define('Member', {
     id: {
       allowNull: false,
-      autoIncrement: true,
       primaryKey: true,
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
     },
     name: {
       type: DataTypes.STRING,
@@ -38,9 +37,9 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+    expiresAt: {
+      type: DataTypes.DATE,
+      defaultValue: null,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -52,6 +51,31 @@ export default (sequelize, DataTypes) => {
       onUpdate: sequelize.NOW,
     },
   });
+
+  /**
+   * Get a member details if it exist
+   * @param {string} column Column to check against
+   * @param {string} value Value to lookup
+   * @returns {object} The user details if found, null
+   */
+  Member.getMember = async (column, value) => {
+    let result = null;
+    try {
+      const { dataValues } = await Member.findOne({
+        where: {
+          [column]: value,
+        },
+        attributes: {
+          exclude: ['password'],
+        },
+      });
+      result = dataValues;
+    } catch (error) {
+      // TODO
+    }
+    return result;
+  };
+
   Member.associate = (models) => {
     // associations can be defined here
   };
