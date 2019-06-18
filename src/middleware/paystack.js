@@ -6,7 +6,7 @@ const displayError = (response) => {
   Response.send(
     response,
     STATUS.FORBIDDEN,
-    [],
+    null,
     'We could not verify your payment. Please try again or contact us for assistance.',
     false,
   );

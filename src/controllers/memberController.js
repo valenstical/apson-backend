@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import Random from 'random-int';
+import moment from 'moment';
 
 import { Response, generateToken } from '../helpers/utils';
 import { STATUS, STATE_CODES } from '../helpers/constants';
@@ -18,7 +19,7 @@ class MemberController {
    * @param {object} response The response object
    * @param {function} next The next callback function
    */
-  static async login(request, response, next) {
+  static async login(request, response) {
     const { username, password } = request.body;
     const encryptedPassword = bcrypt.hashSync(password, process.env.SECRET_KEY);
 
@@ -42,6 +43,7 @@ class MemberController {
       if (status) {
         result = result.dataValues;
         result.token = generateToken({ id: result.id });
+        result.isActive = moment(result.expiresAt).isAfter(moment());
         code = STATUS.OK;
         message = 'Log in  successful!';
       }
@@ -50,7 +52,7 @@ class MemberController {
       return Response.send(
         response,
         STATUS.SERVER_ERROR,
-        [],
+        null,
         'Log in failed, please try again.',
         false,
       );
@@ -70,6 +72,7 @@ class MemberController {
       const { dataValues } = await Member.create(body);
       delete dataValues.password;
       dataValues.token = generateToken({ id: dataValues.id });
+      dataValues.isActive = false;
       return Response.send(response, STATUS.CREATED, dataValues, 'Registration sucessful!', true);
     } catch (error) {
       return MemberController.displayInsertError('Registration failed.', error, response);
@@ -88,7 +91,7 @@ class MemberController {
     } = response.locals;
     try {
       await Member.update(request.body, { where: { id } });
-      return Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
+      return Response.send(response, STATUS.CREATED, null, 'Update sucessful!', true);
     } catch (error) {
       return MemberController.displayInsertError('Update member details failed.', error, response);
     }
@@ -107,7 +110,7 @@ class MemberController {
     const { url } = request.body;
     try {
       await Member.update({ image: url }, { where: { id } });
-      return Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
+      return Response.send(response, STATUS.CREATED, null, 'Update sucessful!', true);
     } catch (error) {
       return MemberController.displayInsertError('Update member details failed.', error, response);
     }
@@ -130,14 +133,14 @@ class MemberController {
       template: member ? 'forgot-password' : 'no-account',
       context: {
         name: member ? member.name : '',
-        link: `${process.env.ROOT}/reset-password?token=${token}`,
+        link: `${process.env.ROOT}/#/reset-password?token=${token}`,
         root: process.env.ROOT,
       },
     });
     return Response.send(
       response,
       STATUS.OK,
-      [],
+      null,
       `A link to reset your password has been set to ${email}. Please check your email.`,
       true,
     );
@@ -159,14 +162,14 @@ class MemberController {
         return Response.send(
           response,
           STATUS.UNATHORIZED,
-          [],
+          null,
           'There was an issue verifying your account. You may need to send another request for a new password.',
           true,
         );
       }
 
       await Member.update({ password }, { where: { email } });
-      return Response.send(response, STATUS.CREATED, [], 'Password reset sucessful!', true);
+      return Response.send(response, STATUS.CREATED, null, 'Password reset sucessful!', true);
     } catch (error) {
       return MemberController.displayInsertError('Password reset failed!.', error, response);
     }
@@ -189,11 +192,10 @@ class MemberController {
       STATUS.UNPROCESSED,
       [
         {
-          field: path,
-          message,
+          [path]: message,
         },
       ],
-      `${title} ${message}.`,
+      `${title}`,
       false,
     );
   }

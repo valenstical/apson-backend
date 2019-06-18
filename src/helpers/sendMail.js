@@ -4,7 +4,7 @@ import { readFile } from './utils';
 
 class Mailer {
   static async send({
-    to, subject, template, context, attachments
+    to, replyTo, subject, template, context, attachments
   }) {
     const smtp = {
       host: process.env.EMAIL_HOST,
@@ -15,17 +15,21 @@ class Mailer {
       },
     };
     const content = {
-      from: process.env.EMAIL_ADDRESS,
-      replyTo: process.env.EMAIL_ADDRESS,
+      from: `"APSON" <${process.env.EMAIL_ADDRESS}>`,
+      replyTo: replyTo || process.env.EMAIL_ADDRESS,
       to,
       subject,
       attachments,
     };
     try {
-      const file = await readFile(`views/${template}.html`);
+      if (context) {
+        const file = await readFile(`views/${template}.html`);
+        const compiled = Handlebars.compile(file);
+        content.html = compiled(context);
+      } else {
+        content.text = template;
+      }
       const transport = mailer.createTransport(smtp);
-      const compiled = Handlebars.compile(file);
-      content.html = compiled(context);
       transport.sendMail(content, (err, info) => {});
     } catch (error) {
       // TODO

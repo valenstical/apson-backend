@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
-
+import pingmydyno from 'pingmydyno';
 import router from './routes/index';
 
 process.env.BASE_DIR = __dirname;
@@ -20,6 +20,8 @@ app.use(multer({ dest: '' }).any());
 
 app.use('/', router);
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  pingmydyno('https://appson-backend.herokuapp.com');
+});
 
 export default app;
