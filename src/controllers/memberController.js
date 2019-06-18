@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import Random from 'random-int';
 
 import { Response, generateToken } from '../helpers/utils';
-import { STATUS } from '../helpers/constants';
+import { STATUS, STATE_CODES } from '../helpers/constants';
 import models from '../database/models';
 import Mailer from '../helpers/sendMail';
 
@@ -45,9 +45,15 @@ class MemberController {
         code = STATUS.OK;
         message = 'Log in  successful!';
       }
-      Response.send(response, code, result, message, status);
+      return Response.send(response, code, result, message, status);
     } catch (error) {
-      next(error);
+      return Response.send(
+        response,
+        STATUS.SERVER_ERROR,
+        [],
+        'Log in failed, please try again.',
+        false,
+      );
     }
   }
 
@@ -60,13 +66,13 @@ class MemberController {
   static async registerMember(request, response) {
     const { body } = request;
     try {
-      body.id = Random(100000000, 999999999);
+      body.id = `${STATE_CODES[body.state]}${Random(100000, 999999)}`;
       const { dataValues } = await Member.create(body);
       delete dataValues.password;
       dataValues.token = generateToken({ id: dataValues.id });
-      Response.send(response, STATUS.CREATED, dataValues, 'Registration sucessful!', true);
+      return Response.send(response, STATUS.CREATED, dataValues, 'Registration sucessful!', true);
     } catch (error) {
-      MemberController.displayInsertError('Registration failed.', error, response);
+      return MemberController.displayInsertError('Registration failed.', error, response);
     }
   }
 
@@ -82,9 +88,9 @@ class MemberController {
     } = response.locals;
     try {
       await Member.update(request.body, { where: { id } });
-      Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
+      return Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
     } catch (error) {
-      MemberController.displayInsertError('Update member details failed.', error, response);
+      return MemberController.displayInsertError('Update member details failed.', error, response);
     }
   }
 
@@ -101,9 +107,9 @@ class MemberController {
     const { url } = request.body;
     try {
       await Member.update({ image: url }, { where: { id } });
-      Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
+      return Response.send(response, STATUS.CREATED, [], 'Update sucessful!', true);
     } catch (error) {
-      MemberController.displayInsertError('Update member details failed.', error, response);
+      return MemberController.displayInsertError('Update member details failed.', error, response);
     }
   }
 
@@ -115,7 +121,7 @@ class MemberController {
    */
   static async forgotPassword(request, response) {
     const { email } = request.body;
-    const member = await MemberController.getMember('email', email);
+    const member = await Member.getMember('email', email);
 
     const token = generateToken({ email }, '1h');
     Mailer.send({
@@ -129,7 +135,7 @@ class MemberController {
         root: process.env.ROOT,
       },
     });
-    Response.send(
+    return Response.send(
       response,
       STATUS.OK,
       [],
@@ -161,9 +167,9 @@ class MemberController {
       }
 
       await Member.update({ password }, { where: { email } });
-      Response.send(response, STATUS.CREATED, [], 'Password reset sucessful!', true);
+      return Response.send(response, STATUS.CREATED, [], 'Password reset sucessful!', true);
     } catch (error) {
-      MemberController.displayInsertError('Password reset failed!.', error, response);
+      return MemberController.displayInsertError('Password reset failed!.', error, response);
     }
   }
 
@@ -191,30 +197,6 @@ class MemberController {
       `${title} ${message}.`,
       false,
     );
-  }
-
-  /**
-   * Get a member details if it exist
-   * @param {string} column Column to check against
-   * @param {string} value Value to lookup
-   * @returns {object} The user details if found, null
-   */
-  static async getMember(column, value) {
-    let result = null;
-    try {
-      const { dataValues } = await Member.findOne({
-        where: {
-          [column]: value,
-        },
-        attributes: {
-          exclude: ['password'],
-        },
-      });
-      result = dataValues;
-    } catch (error) {
-      // TODO
-    }
-    return result;
   }
 }
 export default MemberController;

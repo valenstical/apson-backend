@@ -1,3 +1,8 @@
+import { listOfStateCodes, listOfStates } from './states';
+
+export const STATE_CODES = listOfStateCodes;
+export const STATES = listOfStates;
+
 export const STATUS = {
   OK: 200,
   CREATED: 201,
@@ -6,7 +11,7 @@ export const STATUS = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   UNPROCESSED: 422,
-  SERVER_ERROR: 500
+  SERVER_ERROR: 500,
 };
 
 export const MESSAGE = {
@@ -19,11 +24,15 @@ export const MESSAGE = {
 
   CREATE_SUCCESS: 'Successfully created',
   UPDATE_SUCCESS: 'Successfully updated',
-  VALIDATE_ERROR:
-    'There was a problem with your request, please check the values you entered.',
+  VALIDATE_ERROR: 'There was a problem with your request, please check the values you entered.',
 
   SUCCESS_MESSAGE: 'Operation was successful',
   FAILURE_MESSAGE: 'Operation failed',
+};
+
+export const PAYMENT_TYPE = {
+  MEMBERSHIP: 'plan_membership_fee',
+  STUDENT: 'plan_student_fee',
 };
 
 export default {};
