@@ -1,7 +1,9 @@
 import { listOfStateCodes, listOfStates } from './states';
+import { listOfLgas } from './lga';
 
 export const STATE_CODES = listOfStateCodes;
 export const STATES = listOfStates;
+export const LGAS = listOfLgas;
 
 export const STATUS = {
   OK: 200,
@@ -13,6 +15,8 @@ export const STATUS = {
   UNPROCESSED: 422,
   SERVER_ERROR: 500,
 };
+
+export const SCHOOL_TYPES = ['Creche/Nursery', 'Primary', 'Secondary'];
 
 export const MESSAGE = {
   SERVER_ERROR:
