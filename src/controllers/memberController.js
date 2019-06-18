@@ -129,7 +129,6 @@ class MemberController {
       subject: 'Reset your Password',
       template: member ? 'forgot-password' : 'no-account',
       context: {
-        icon: process.env.APSON_ICON,
         name: member ? member.name : '',
         link: `${process.env.ROOT}/reset-password?token=${token}`,
         root: process.env.ROOT,
