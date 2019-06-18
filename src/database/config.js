@@ -17,5 +17,9 @@ export default {
     host: process.env.DB_HOSTNAME,
     dialect: 'postgres',
     logging: false,
+    pool: {
+      max: 5,
+      min: 0,
+    },
   },
 };
