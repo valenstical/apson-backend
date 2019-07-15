@@ -22,7 +22,7 @@ class PaymentController {
       authValue: { id },
     } = response.locals;
     const member = await Member.getMember('id', id);
-    const { paymentType } = request.body;
+    const { paymentType } = request.query;
     return Response.send(
       response,
       STATUS.OK,
@@ -55,13 +55,13 @@ class PaymentController {
         plan,
         memberId: id,
       });
-      Response.send(response, STATUS.OK, [], 'Payment successful', true);
+      Response.send(response, STATUS.OK, null, 'Payment successful', true);
       PaymentController.deliverValue(plan, { reference, id });
     } catch (error) {
       return Response.send(
         response,
         STATUS.FORBIDDEN,
-        [],
+        null,
         'There was a problem processing your payment. Please contact us for assistance.',
         false,
       );
