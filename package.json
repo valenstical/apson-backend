@@ -40,7 +40,7 @@
     "express-validator": "^5.3.1",
     "handlebars": "^4.1.2",
     "jsonwebtoken": "^8.5.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "multer": "^1.4.1",
     "nodemailer": "^6.2.1",
     "pdfcrowd": "^4.9.0",
